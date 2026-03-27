@@ -24,15 +24,14 @@
 
   <!-- Ghost terminal lines -->
   <g opacity="0.035" fill="#94a3b8" font-family="Courier New,monospace" font-size="9">
-    <text x="24" y="28">$ nmap -sV -sC -O -A -p- 10.0.0.1</text>
-    <text x="24" y="44">$ sqlmap -u "http://target/login" --batch --dbs</text>
-    <text x="24" y="60">$ nikto -h http://10.0.0.1 -Tuning 123bde</text>
-    <text x="500" y="28">$ nuclei -u https://target.com -t cves/</text>
-    <text x="500" y="44">$ hydra -l admin -P rockyou.txt ssh://10.0.0.1</text>
-    <text x="880" y="28">$ ffuf -w wordlist.txt -u http://target/FUZZ</text>
-    <text x="24" y="326">[CRITICAL] RCE via deserialization CVE-2024-XXXX</text>
-    <text x="500" y="326">[HIGH] SQL Injection in /api/login endpoint</text>
-    <text x="880" y="326">[FINDING] Privilege escalation via SUID binary</text>
+    <text x="24" y="28">$ run_recon_pipeline --pipeline full --target 10.0.0.1</text>
+    <text x="24" y="44">$ smart_exploit_search Apache 2.4.41 | rank metasploit</text>
+    <text x="24" y="60">$ credential_spray --vault all --services ssh,ftp,smb,rdp</text>
+    <text x="540" y="28">$ spawn_subagent "ffuf directory brute-force"</text>
+    <text x="540" y="44">$ add_attack_step --stage lateral_movement --technique PtH</text>
+    <text x="900" y="28">$ toggle_stealth --enabled --delay 2</text>
+    <text x="24" y="326">[ATTACK GRAPH] Initial Access -&gt; Credential Access -&gt; Lateral Movement -&gt; Domain Admin</text>
+    <text x="700" y="326">[SPRAY] admin:P@ss*** -&gt; ssh:22 SUCCESS | mysql:3306 SUCCESS</text>
   </g>
 
   <!-- Top bar -->
@@ -76,7 +75,7 @@
   <text x="162" y="167" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="44" font-weight="800" fill="#f8fafc" letter-spacing="-1">Testing Copilot</text>
 
   <!-- Subtitle -->
-  <text x="164" y="199" font-family="Inter,Segoe UI,sans-serif" font-size="15" fill="#64748b" letter-spacing="0.3">AI-powered pentest agent with 23 tools, subagents, credential vault, and stealth mode</text>
+  <text x="164" y="199" font-family="Inter,Segoe UI,sans-serif" font-size="15" fill="#64748b" letter-spacing="0.3">27 agent tools, auto-recon pipelines, credential spray, MITRE ATT&amp;CK attack graph</text>
 
   <!-- Tag pills -->
   <g transform="translate(164, 220)">
@@ -88,39 +87,39 @@
     <rect x="70" y="0" width="62" height="24" rx="12" fill="none" stroke="#7B61FF" stroke-width="0.8" opacity="0.35"/>
     <text x="101" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#7B61FF" text-anchor="middle">OpenAI</text>
 
-    <rect x="140" y="0" width="46" height="24" rx="12" fill="#A855F7" opacity="0.12"/>
-    <rect x="140" y="0" width="46" height="24" rx="12" fill="none" stroke="#A855F7" stroke-width="0.8" opacity="0.35"/>
-    <text x="163" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#A855F7" text-anchor="middle">SSH</text>
+    <rect x="140" y="0" width="78" height="24" rx="12" fill="#A855F7" opacity="0.12"/>
+    <rect x="140" y="0" width="78" height="24" rx="12" fill="none" stroke="#A855F7" stroke-width="0.8" opacity="0.35"/>
+    <text x="179" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#A855F7" text-anchor="middle">Subagents</text>
 
-    <rect x="194" y="0" width="48" height="24" rx="12" fill="#22c55e" opacity="0.12"/>
-    <rect x="194" y="0" width="48" height="24" rx="12" fill="none" stroke="#22c55e" stroke-width="0.8" opacity="0.35"/>
-    <text x="218" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#22c55e" text-anchor="middle">Local</text>
+    <rect x="226" y="0" width="72" height="24" rx="12" fill="#22c55e" opacity="0.12"/>
+    <rect x="226" y="0" width="72" height="24" rx="12" fill="none" stroke="#22c55e" stroke-width="0.8" opacity="0.35"/>
+    <text x="262" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#22c55e" text-anchor="middle">Cred Vault</text>
 
-    <rect x="250" y="0" width="76" height="24" rx="12" fill="#f59e0b" opacity="0.12"/>
-    <rect x="250" y="0" width="76" height="24" rx="12" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0.35"/>
-    <text x="288" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#f59e0b" text-anchor="middle">Kali Linux</text>
+    <rect x="306" y="0" width="60" height="24" rx="12" fill="#f59e0b" opacity="0.12"/>
+    <rect x="306" y="0" width="60" height="24" rx="12" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0.35"/>
+    <text x="336" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#f59e0b" text-anchor="middle">Stealth</text>
 
-    <rect x="334" y="0" width="92" height="24" rx="12" fill="#ef4444" opacity="0.12"/>
-    <rect x="334" y="0" width="92" height="24" rx="12" fill="none" stroke="#ef4444" stroke-width="0.8" opacity="0.35"/>
-    <text x="380" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#ef4444" text-anchor="middle">MITRE ATT&amp;CK</text>
+    <rect x="374" y="0" width="92" height="24" rx="12" fill="#ef4444" opacity="0.12"/>
+    <rect x="374" y="0" width="92" height="24" rx="12" fill="none" stroke="#ef4444" stroke-width="0.8" opacity="0.35"/>
+    <text x="420" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#ef4444" text-anchor="middle">MITRE ATT&amp;CK</text>
   </g>
 
   <!-- Stats cards -->
   <g transform="translate(770, 78)">
     <rect x="0" y="0" width="125" height="76" rx="10" fill="#1e293b" opacity="0.5"/>
     <rect x="0" y="0" width="125" height="76" rx="10" fill="none" stroke="#334155" stroke-width="0.7"/>
-    <text x="62" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#00D4FF" text-anchor="middle">23</text>
+    <text x="62" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#00D4FF" text-anchor="middle">27</text>
     <text x="62" y="56" font-family="Inter,sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">AGENT TOOLS</text>
 
     <rect x="135" y="0" width="125" height="76" rx="10" fill="#1e293b" opacity="0.5"/>
     <rect x="135" y="0" width="125" height="76" rx="10" fill="none" stroke="#334155" stroke-width="0.7"/>
-    <text x="197" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#7B61FF" text-anchor="middle">60+</text>
-    <text x="197" y="56" font-family="Inter,sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">PENTEST TOOLS</text>
+    <text x="197" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#7B61FF" text-anchor="middle">13</text>
+    <text x="197" y="56" font-family="Inter,sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">AI SYSTEMS</text>
 
     <rect x="270" y="0" width="125" height="76" rx="10" fill="#1e293b" opacity="0.5"/>
     <rect x="270" y="0" width="125" height="76" rx="10" fill="none" stroke="#334155" stroke-width="0.7"/>
-    <text x="332" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#22c55e" text-anchor="middle">20</text>
-    <text x="332" y="56" font-family="Inter,sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">CLI COMMANDS</text>
+    <text x="332" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#22c55e" text-anchor="middle">4.3K</text>
+    <text x="332" y="56" font-family="Inter,sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">LINES OF CODE</text>
   </g>
 
   <!-- Mini terminal -->
@@ -131,20 +130,21 @@
     <circle cx="14" cy="11" r="4" fill="#ef4444" opacity="0.8"/>
     <circle cx="28" cy="11" r="4" fill="#f59e0b" opacity="0.8"/>
     <circle cx="42" cy="11" r="4" fill="#22c55e" opacity="0.8"/>
-    <text x="68" y="15" font-family="Courier New,monospace" font-size="8.5" fill="#64748b">pentest-copilot</text>
+    <text x="68" y="15" font-family="Courier New,monospace" font-size="8.5" fill="#64748b">pentest-copilot v2.3.0</text>
 
     <text x="14" y="40" font-family="Courier New,monospace" font-size="9.5" fill="#22c55e">$</text>
-    <text x="26" y="40" font-family="Courier New,monospace" font-size="9.5" fill="#cdd6f4">python pentest_copilot.py --target 10.0.0.1</text>
-    <text x="14" y="55" font-family="Courier New,monospace" font-size="9" fill="#64748b">[*] Connected to root@kali -- scanning...</text>
-    <text x="14" y="70" font-family="Courier New,monospace" font-size="9" fill="#ef4444" font-weight="bold">[CRITICAL]</text>
-    <text x="82" y="70" font-family="Courier New,monospace" font-size="9" fill="#cdd6f4">RCE via Log4Shell (CVE-2021-44228)</text>
-    <text x="14" y="82" font-family="Courier New,monospace" font-size="9" fill="#f59e0b" font-weight="bold">[HIGH]</text>
-    <text x="58" y="82" font-family="Courier New,monospace" font-size="9" fill="#cdd6f4">SQL Injection in /api/v1/users</text>
+    <text x="26" y="40" font-family="Courier New,monospace" font-size="9.5" fill="#cdd6f4">run_recon_pipeline --full --target 10.0.0.1</text>
+    <text x="14" y="55" font-family="Courier New,monospace" font-size="9" fill="#64748b">[RECON] nmap+whatweb+nikto+ffuf+nuclei... done</text>
+    <text x="14" y="70" font-family="Courier New,monospace" font-size="9" fill="#ef4444" font-weight="bold">[SPRAY]</text>
+    <text x="62" y="70" font-family="Courier New,monospace" font-size="9" fill="#22c55e">admin@ssh:22 SUCCESS</text>
+    <text x="230" y="70" font-family="Courier New,monospace" font-size="9" fill="#22c55e">admin@mysql SUCCESS</text>
+    <text x="14" y="82" font-family="Courier New,monospace" font-size="9" fill="#00D4FF" font-weight="bold">[GRAPH]</text>
+    <text x="62" y="82" font-family="Courier New,monospace" font-size="9" fill="#cdd6f4">InitAccess -&gt; CredAccess -&gt; LatMove -&gt; DomAdmin</text>
   </g>
 
   <!-- Bottom line -->
   <line x1="40" y1="290" x2="1160" y2="290" stroke="#1e293b" stroke-width="0.7"/>
-  <text x="164" y="312" font-family="Inter,Segoe UI,sans-serif" font-size="11" fill="#475569" letter-spacing="0.2">v2.2.0 · 23 Agent Tools · 5 Playbooks · Subagents · Credential Vault · Stealth Mode · github.com/Krishcalin/Autonomous-Pen-Testing</text>
+  <text x="164" y="312" font-family="Inter,Segoe UI,sans-serif" font-size="11" fill="#475569" letter-spacing="0.2">v2.3.0 · 27 Tools · 4 Recon Pipelines · Cred Spray · Attack Graph · 5 Playbooks · github.com/Krishcalin/Autonomous-Pen-Testing</text>
 
   <!-- Bottom bar -->
   <rect x="0" y="336.5" width="1200" height="3.5" fill="url(#topBar)" rx="2"/>
