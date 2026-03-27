@@ -4,7 +4,8 @@
 
 An AI-powered penetration testing agent that connects to a Kali/Parrot attack
 box via SSH, runs security tools autonomously, analyses output, plans next steps,
-stores credentials for reuse, spawns parallel subagents, and documents findings.
+stores credentials for reuse, spawns parallel subagents, sprays credentials across
+services, builds MITRE ATT&CK attack graphs, and documents findings.
 
 **Repository**: https://github.com/Krishcalin/Autonomous-Pen-Testing
 **License**: MIT
@@ -15,7 +16,7 @@ stores credentials for reuse, spawns parallel subagents, and documents findings.
 
 | File | Version | Lines | Purpose |
 |------|---------|------:|---------|
-| `pentest_copilot.py` | 2.2.0 | 3,681 | Complete pentest agent |
+| `pentest_copilot.py` | 2.3.0 | 4,365 | Complete pentest agent |
 | `banner.svg` | — | — | GitHub README banner |
 | `README.md` | — | — | Documentation |
 | `CLAUDE.md` | — | — | This file |
@@ -26,18 +27,18 @@ stores credentials for reuse, spawns parallel subagents, and documents findings.
 pentest_copilot.py
 ├── LLM Providers: ClaudeProvider, OpenAIProvider
 ├── Executors: SSHExecutor (paramiko), LocalExecutor (subprocess)
-├── 23 Agent Tools (LLM function-calling)
-├── 9 Supporting Systems (vault, shells, subagents, etc.)
-├── PentestAgent (core agentic loop)
+├── 27 Agent Tools (LLM function-calling)
+├── 13 Supporting Systems
+├── PentestAgent (core agentic loop, up to 25 iterations/turn)
 ├── Report Generation (JSON + HTML)
-└── CLI (20 slash commands)
+└── CLI (21 slash commands)
 ```
 
-## 23 Agent Tools
+## 27 Agent Tools — Complete Reference
 
 ### Core (7)
-| Tool | Handler Function | Purpose |
-|------|-----------------|---------|
+| Tool | Handler | Purpose |
+|------|---------|---------|
 | `run_command` | `handle_run_command` | Execute bash on attack box |
 | `run_script` | `handle_run_script` | Write + execute Python scripts |
 | `install_tool` | `handle_install_tool` | Install tools (apt/pip/go/git) |
@@ -47,8 +48,8 @@ pentest_copilot.py
 | `ask_user` | `handle_ask_user` | Ask user a question |
 
 ### Tier 1 — Parallelism & State (6)
-| Tool | Handler Function | Purpose |
-|------|-----------------|---------|
+| Tool | Handler | Purpose |
+|------|---------|---------|
 | `spawn_subagent` | `handle_spawn_subagent` | Background parallel agent |
 | `store_credential` | `handle_store_credential` | Store creds in vault |
 | `list_credentials` | `handle_list_credentials` | List vault contents |
@@ -57,8 +58,8 @@ pentest_copilot.py
 | `use_playbook` | `handle_use_playbook` | Load methodology playbook |
 
 ### Tier 2 — Detection & Exploitation (7)
-| Tool | Handler Function | Purpose |
-|------|-----------------|---------|
+| Tool | Handler | Purpose |
+|------|---------|---------|
 | `detect_tools` | `handle_detect_tools` | Check installed tools |
 | `search_exploits` | `handle_search_exploits` | SearchSploit CVE lookup |
 | `start_listener` | `handle_start_listener` | Start netcat listener |
@@ -68,85 +69,125 @@ pentest_copilot.py
 | `run_phalanx_scanner` | `handle_run_phalanx_scanner` | Run Phalanx Cyber scanner |
 
 ### Tier 3 — Methodology & Stealth (3)
-| Tool | Handler Function | Purpose |
-|------|-----------------|---------|
+| Tool | Handler | Purpose |
+|------|---------|---------|
 | `set_phase` | `handle_set_phase` | Track pentest phase progress |
 | `get_compliance_map` | `handle_get_compliance_map` | OWASP/PTES/NIST mapping |
 | `toggle_stealth` | `handle_toggle_stealth` | Rate limiting + IDS evasion |
 
-## Supporting Systems (9 classes)
+### Tier 4 — Intelligence & Autonomy (4)
+| Tool | Handler | Purpose |
+|------|---------|---------|
+| `run_recon_pipeline` | `handle_run_recon_pipeline` | Auto-chain recon tools (4 pipelines) |
+| `smart_exploit_search` | `handle_smart_exploit_search` | Parse nmap + rank ExploitDB results |
+| `credential_spray` | `handle_credential_spray` | Spray vault creds via hydra (14 protocols) |
+| `add_attack_step` | `handle_add_attack_step` | Record kill chain step (11 ATT&CK stages) |
 
-| Class | Purpose |
-|-------|---------|
-| `CredentialVault` | Thread-safe credential storage with dedup and reuse hints |
-| `ShellManager` | Named persistent shell sessions |
-| `SubagentManager` | Background parallel agent spawning with own LLM context |
-| `ToolDetector` | Scan attack box for installed tools with caching |
-| `ExploitSearcher` | SearchSploit, nmap vuln scripts, nuclei CVE templates |
-| `ReverseShellHandler` | Netcat listener management + 7 payload generators |
-| `ProgressTracker` | 5-phase methodology tracking with command/finding counts |
-| `EvidenceCollector` | Auto-capture command outputs as timestamped evidence files |
-| `StealthController` | Rate limiting, jitter, auto-stealth flags for 9 tools |
+## 13 Supporting Systems
 
-## 5 Methodology Playbooks
+| Class | Section | Purpose |
+|-------|---------|---------|
+| `CredentialVault` | Credential Vault | Thread-safe cred storage with dedup and reuse hints |
+| `ShellManager` | Multi-Shell Manager | Named persistent shell sessions |
+| `SubagentManager` | Subagent Manager | Background parallel agent spawning with own LLM context |
+| `ToolDetector` | Tool Auto-Detection | Scan attack box for installed tools with caching |
+| `ExploitSearcher` | Exploit Search Engine | SearchSploit, nmap vuln scripts, nuclei CVE templates |
+| `ReverseShellHandler` | Reverse Shell Handler | Netcat listener management + 7 payload generators |
+| `ProgressTracker` | Progress Tracker | 5-phase methodology tracking with per-phase stats |
+| `EvidenceCollector` | Evidence Auto-Capture | Auto-capture command outputs as timestamped files |
+| `StealthController` | Stealth Mode | Rate limiting, jitter, auto-stealth flags for 9 tools |
+| `ReconPipeline` | Autonomous Recon Pipeline | 4 multi-tool auto-chain pipelines |
+| `SmartExploitSelector` | Smart Exploit Selection | Nmap output parser + ExploitDB ranker |
+| `CredentialSprayEngine` | Credential Spray Engine | Hydra-based 14-protocol credential spraying |
+| `AttackGraph` | Attack Graph | 11-stage MITRE ATT&CK kill chain tracker |
 
-| Key | Name | Focus |
-|-----|------|-------|
-| `webapp` | Web Application Pentest | Recon, content discovery, vuln scan, exploit, report |
-| `network` | Network Penetration Test | Host discovery, service enum, vuln assessment, post-exploit |
-| `api` | API Security Assessment | API discovery, auth testing, input validation, business logic |
-| `ad` | Active Directory Assessment | LDAP/Kerberos/SMB enum, credential attacks, lateral movement |
-| `cloud` | Cloud Security Assessment | Cloud recon, IAM, services, data exfiltration |
+## Recon Pipelines
+
+| Key | Tools Chained |
+|-----|---------------|
+| `full` | nmap → whatweb → wafw00f → nikto → ffuf → nuclei |
+| `quick` | nmap → whatweb → ffuf |
+| `subdomain` | subfinder → httpx |
+| `stealth` | nmap (slow SYN) → whatweb |
+
+Defined in `ReconPipeline.PIPELINES` dict. Each entry is a list of `(tool_name, cmd_template)` tuples with `{target}` placeholder.
+
+## Methodology Playbooks
+
+| Key | Name |
+|-----|------|
+| `webapp` | Web Application Pentest |
+| `network` | Network Penetration Test |
+| `api` | API Security Assessment |
+| `ad` | Active Directory Assessment |
+| `cloud` | Cloud Security Assessment |
+
+Defined in `PLAYBOOKS` dict. Each entry has `name` and `prompt` (structured methodology text).
+
+## Attack Graph Stages (MITRE ATT&CK)
+
+```python
+KILL_CHAIN_STAGES = [
+    ("initial_access",  "Initial Access"),
+    ("execution",       "Execution"),
+    ("persistence",     "Persistence"),
+    ("priv_escalation", "Privilege Escalation"),
+    ("defense_evasion", "Defense Evasion"),
+    ("cred_access",     "Credential Access"),
+    ("discovery",       "Discovery"),
+    ("lateral_movement","Lateral Movement"),
+    ("collection",      "Collection"),
+    ("exfiltration",    "Exfiltration"),
+    ("impact",          "Impact"),
+]
+```
+
+## Credential Spray Protocols
+
+```python
+SERVICE_MODULES = {
+    "ssh": "ssh", "ftp": "ftp", "http": "http-get", "https": "https-get",
+    "smb": "smb", "rdp": "rdp", "mysql": "mysql", "mssql": "mssql",
+    "postgres": "postgres", "telnet": "telnet", "vnc": "vnc",
+    "smtp": "smtp", "pop3": "pop3", "imap": "imap", "ldap": "ldap",
+}
+```
+
+## Compliance Mapping Categories
+
+`COMPLIANCE_MAP` covers 14 categories, each mapped to OWASP Top 10, PTES, NIST 800-53, CWE:
+SQLi, XSS, RCE, Auth, IDOR, Misconfig, Crypto, SSRF, Deserialization, InfoDisclosure, PrivEsc, DefaultCreds, LFI, BruteForce.
+
+## Phalanx Cyber Scanners
+
+`PHALANX_SCANNERS` registers 9 scanners: `sast_java`, `sast_python`, `sast_mern`, `sast_php`, `owasp_llm`, `api_security`, `aws_cloud`, `nuclei_templates`. Auto-clones from GitHub if not present.
 
 ## LLM Tool Schema
 
-All 23 tools use the Claude `input_schema` format. For OpenAI, they are auto-converted
-to `function.parameters` format by `_openai_tools()`.
-
-Tool definitions are in `AGENT_TOOLS_SCHEMA` (list of dicts).
+All 27 tools use the Claude `input_schema` format in `AGENT_TOOLS_SCHEMA`. For OpenAI, auto-converted to `function.parameters` format by `_openai_tools()`.
 
 ## Agentic Loop
 
 ```
-user_message → build_system_prompt() → LLM.call()
-                                         ↓
-                              text response  OR  tool_use
-                                   ↓                ↓
-                              print & done    execute handler → feed result → loop
-                                                                   (up to 25 iterations)
+user_message → inject subagent results → build_system_prompt(13 systems)
+  → LLM.call() → text | tool_use
+                    ↓         ↓
+               print     stealth.wait() → execute handler → evidence.capture()
+                              → feed result → loop (up to 25 iterations)
 ```
 
-- Subagent results from `SubagentManager.get_completed_results()` are auto-injected
-  into the user message before each LLM call.
-- The system prompt includes dynamic context: credential vault, shell list, subagent
-  status, listener status, tool detection summary, progress tracker, stealth mode.
+The system prompt dynamically injects context from all 13 supporting systems:
+credential vault, shells, subagents, listeners, tool status, progress, stealth,
+attack graph, findings.
 
 ## Safety Controls
 
 - `DANGEROUS_PATTERNS` — 13 regex patterns for destructive commands
 - `is_dangerous()` → `request_approval()` user prompt
-- `--auto-approve` flag bypasses approval (CI/CD use)
+- `--auto-approve` flag bypasses approval
 - `truncate_output()` caps tool output at 15K chars
 - `MAX_HISTORY_MESSAGES = 60` for conversation trimming
-
-## Compliance Mapping
-
-`COMPLIANCE_MAP` dict covers 14 categories, each mapping to:
-- **OWASP**: Top 10 2021 categories
-- **PTES**: Penetration Testing Execution Standard sections
-- **NIST**: 800-53 control families
-- **CWE**: Common Weakness Enumeration IDs
-
-## Phalanx Cyber Scanners
-
-`PHALANX_SCANNERS` dict registers 9 scanners:
-- `sast_java`, `sast_python`, `sast_mern`, `sast_php` — Static analysis
-- `owasp_llm` — AI/LLM security
-- `api_security` — OWASP API Top 10
-- `aws_cloud` — CloudFormation + Terraform
-- `nuclei_templates` — CVE template scanning
-
-Each entry includes `command`, `repo` (GitHub URL for auto-clone), `file`, `description`.
+- Stealth mode auto-applies evasion flags to 9 tools
 
 ## CLI
 
@@ -158,34 +199,49 @@ python pentest_copilot.py --target TARGET (--local | --ssh-host HOST)
     [--max-iterations N] [--load-session FILE] [--version]
 ```
 
-20 slash commands: `/help`, `/target`, `/scope`, `/tools`, `/findings`, `/creds`,
+21 slash commands: `/help`, `/target`, `/scope`, `/tools`, `/findings`, `/creds`,
 `/shells`, `/subagents`, `/playbooks`, `/listeners`, `/phalanx`, `/detect`,
-`/progress`, `/evidence`, `/stealth`, `/history`, `/save`, `/report`, `/clear`, `/quit`
+`/progress`, `/evidence`, `/stealth`, `/attack`, `/history`, `/save`, `/report`,
+`/clear`, `/quit`
+
+## Session Export Format
+
+JSON session includes: `session_id`, `target`, `scope`, `objective`, `findings[]`,
+`credentials[]`, `attack_graph[]`, `command_history[]`, `total_iterations`, `message_count`.
 
 ## Development Guidelines
 
 ### Adding a New Agent Tool
-1. Add the tool schema dict to `AGENT_TOOLS_SCHEMA` list
-2. Create a `handle_<tool_name>()` function in the Tool Handlers section
-3. Add the dispatch case in `PentestAgent._handle_tool()`
-4. If it has state, add context to `build_system_prompt()`
-5. Optionally add a `/command` in the CLI section
+1. Add tool schema dict to `AGENT_TOOLS_SCHEMA`
+2. Create `handle_<tool_name>()` function in Tool Handlers section
+3. Add dispatch case in `PentestAgent._handle_tool()`
+4. If stateful, add context to `build_system_prompt()`
+5. Optionally add a `/command` in CLI section
+
+### Adding a New Recon Pipeline
+1. Add entry to `ReconPipeline.PIPELINES` dict
+2. Update the `run_recon_pipeline` tool's enum list
 
 ### Adding a New Playbook
-1. Add entry to the `PLAYBOOKS` dict (key, name, prompt)
-2. The `use_playbook` tool will automatically pick it up
+1. Add entry to `PLAYBOOKS` dict (key, name, prompt)
+2. Update the `use_playbook` tool's enum list
 
 ### Adding a New Phalanx Scanner
 1. Add entry to `PHALANX_SCANNERS` dict
 2. Include `command` (with `{target}` placeholder), `repo`, `file`, `description`
 
+### Adding a New Kill Chain Stage
+1. Add tuple to `KILL_CHAIN_STAGES` list
+2. Update the `add_attack_step` tool's enum list
+
 ### Conventions
 - Single-file architecture — entire agent in one `.py` file
 - `__slots__` on Finding class for memory efficiency
-- ANSI colour codes for terminal output
+- ANSI colour codes for terminal output (R, B, DIM, RED, GRN, YEL, BLU, MAG, CYN, WHT)
 - HTML reports use Catppuccin Mocha dark theme
 - Thread-safe classes use `threading.Lock()`
 - Exit code 1 on CRITICAL/HIGH findings for CI/CD gating
+- Tool output truncated at 15K chars via `truncate_output()`
 
 ## Version History
 
@@ -195,15 +251,4 @@ python pentest_copilot.py --target TARGET (--local | --ssh-host HOST)
 | v2.0.0 | 2,468 | 13 | 14 | Subagents, vault, multi-shell, playbooks |
 | v2.1.0 | 3,095 | 20 | 17 | Tool detection, exploits, revshell, Phalanx |
 | v2.2.0 | 3,681 | 23 | 20 | Progress, compliance, evidence, stealth |
-
-## Related Projects
-
-| Project | Repo |
-|---------|------|
-| SAST Scanners | [Static-Application-Security-Testing](https://github.com/Krishcalin/Static-Application-Security-Testing) |
-| DAST Scanner | [Dynamic-Application-Security-Testing](https://github.com/Krishcalin/Dynamic-Application-Security-Testing) |
-| API Security | [API-Security](https://github.com/Krishcalin/API-Security) |
-| AWS Security | [AWS-Security-Scanner](https://github.com/Krishcalin/AWS-Security-Scanner) |
-| Windows Red Teaming | [Windows-Red-Teaming](https://github.com/Krishcalin/Windows-Red-Teaming) |
-| Oracle EBS Audit | [Oracle-EBS-Security-Audit](https://github.com/Krishcalin/Oracle-EBS-Security-Audit) |
-| Phalanx Cyber Portal | [My-Portal](https://github.com/Krishcalin/My-Portal) |
+| v2.3.0 | 4,365 | 27 | 21 | Recon pipeline, exploit selector, cred spray, attack graph |

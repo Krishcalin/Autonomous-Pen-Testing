@@ -5,25 +5,26 @@
 </p>
 
 <p align="center">
-  <strong>AI-powered pentest agent with LLM agentic loop, subagent parallelism, credential vault, and stealth mode</strong><br>
-  23 agent tools &bull; 60+ pentest tools &bull; 5 methodology playbooks &bull; 20 CLI commands &bull; 3,681 lines of Python
+  <strong>AI-powered pentest agent with autonomous recon, credential spraying, exploit selection, and kill chain tracking</strong><br>
+  27 agent tools &bull; 60+ pentest tools &bull; 5 playbooks &bull; 21 CLI commands &bull; 4,365 lines of Python
 </p>
 
 ---
 
 ## Overview
 
-A single-file Python agent that connects to a Kali/Parrot attack box via SSH (or runs locally), autonomously executes security tools, analyses output, plans next steps, stores credentials for reuse, spawns parallel subagents, and documents findings — all driven by an LLM agentic loop with Claude or OpenAI.
+A single-file Python agent that connects to a Kali/Parrot attack box via SSH (or runs locally), autonomously executes security tools, analyses output, plans next steps, stores credentials for reuse, spawns parallel subagents, sprays credentials across services, builds attack graphs, and documents findings — all driven by an LLM agentic loop with Claude or OpenAI.
 
 | | |
 |---|---|
 | **File** | `pentest_copilot.py` |
-| **Version** | 2.2.0 |
-| **Lines** | ~3,681 |
-| **Agent Tools** | 23 |
-| **CLI Commands** | 20 |
+| **Version** | 2.3.0 |
+| **Lines** | ~4,365 |
+| **Agent Tools** | 27 |
+| **CLI Commands** | 21 |
 | **Pentest Tools** | 60+ in registry |
 | **Playbooks** | 5 (webapp, network, api, ad, cloud) |
+| **Recon Pipelines** | 4 (full, quick, subdomain, stealth) |
 | **Python** | 3.8+ |
 | **Dependencies** | `anthropic` or `openai` + `paramiko` |
 | **License** | MIT |
@@ -61,7 +62,7 @@ python pentest_copilot.py --target 10.0.0.1 --local \
 
 ---
 
-## 23 Agent Tools
+## 27 Agent Tools
 
 ### Core (7)
 
@@ -79,10 +80,10 @@ python pentest_copilot.py --target 10.0.0.1 --local \
 
 | Tool | Description |
 |------|-------------|
-| `spawn_subagent` | Spawn background agents for concurrent tasks (dir brute-force + subdomain enum simultaneously) |
-| `store_credential` | Store discovered credentials (password, hash, token, key, cookie) for reuse |
-| `list_credentials` | List all credentials in the vault for cross-service reuse |
-| `open_shell` | Open a named persistent shell session (recon, exploit, listener) |
+| `spawn_subagent` | Spawn background agents for concurrent tasks |
+| `store_credential` | Store discovered credentials for cross-service reuse |
+| `list_credentials` | List all credentials in the vault |
+| `open_shell` | Open a named persistent shell session |
 | `run_in_shell` | Run a command in a specific named shell |
 | `use_playbook` | Load a methodology playbook (webapp, network, api, ad, cloud) |
 
@@ -90,21 +91,43 @@ python pentest_copilot.py --target 10.0.0.1 --local \
 
 | Tool | Description |
 |------|-------------|
-| `detect_tools` | Scan attack box for installed vs missing pentest tools |
-| `search_exploits` | Search ExploitDB/searchsploit for CVEs by service version |
+| `detect_tools` | Scan attack box for installed vs missing tools |
+| `search_exploits` | Search ExploitDB for CVEs by service version |
 | `start_listener` | Start a netcat reverse shell listener |
 | `stop_listener` | Stop a running listener |
-| `check_listener` | Check if a listener caught a reverse shell connection |
+| `check_listener` | Check if a listener caught a connection |
 | `generate_payload` | Generate reverse shell payloads (bash, python, nc, php, perl, powershell) |
-| `run_phalanx_scanner` | Run a Phalanx Cyber scanner (SAST, API, Cloud, Nuclei CVE) |
+| `run_phalanx_scanner` | Run a Phalanx Cyber scanner (SAST, API, Cloud, Nuclei) |
 
 ### Tier 3 — Methodology & Stealth (3)
 
 | Tool | Description |
 |------|-------------|
 | `set_phase` | Track pentest progress across 5 methodology phases |
-| `get_compliance_map` | Get OWASP Top 10, PTES, NIST 800-53, CWE mappings for a finding category |
-| `toggle_stealth` | Enable/disable rate limiting and IDS evasion flags |
+| `get_compliance_map` | Get OWASP Top 10, PTES, NIST 800-53, CWE mappings |
+| `toggle_stealth` | Enable/disable rate limiting and IDS evasion |
+
+### Tier 4 — Intelligence & Autonomy (4)
+
+| Tool | Description |
+|------|-------------|
+| `run_recon_pipeline` | Auto-chain recon tools (full/quick/subdomain/stealth pipelines) |
+| `smart_exploit_search` | Parse nmap output, search ExploitDB, rank exploits by reliability |
+| `credential_spray` | Spray vault credentials against all discovered services via hydra (14 protocols) |
+| `add_attack_step` | Record a kill chain step mapped to MITRE ATT&CK stages |
+
+---
+
+## 4 Autonomous Recon Pipelines
+
+| Pipeline | Tools Chained | Use Case |
+|----------|--------------|----------|
+| **full** | nmap → whatweb → wafw00f → nikto → ffuf → nuclei | Comprehensive target assessment |
+| **quick** | nmap → whatweb → ffuf | Fast initial sweep |
+| **subdomain** | subfinder → httpx | Domain-level attack surface mapping |
+| **stealth** | nmap (slow SYN) → whatweb | Evasive reconnaissance |
+
+Each pipeline auto-captures evidence, respects stealth mode, and returns aggregated output.
 
 ---
 
@@ -117,6 +140,32 @@ python pentest_copilot.py --target 10.0.0.1 --local \
 | `api` | API Security Assessment | API Discovery, Auth Testing, Input Validation, Business Logic, Report |
 | `ad` | Active Directory Assessment | AD Recon, Credential Attacks, Lateral Movement, Priv Esc, Domain Dominance |
 | `cloud` | Cloud Security Assessment | Cloud Recon, IAM, Services, Data Exfiltration, Report |
+
+---
+
+## Attack Graph / Kill Chain Tracker
+
+Records the attack path across 11 MITRE ATT&CK stages:
+
+```
+Initial Access → Execution → Persistence → Privilege Escalation →
+Defense Evasion → Credential Access → Discovery → Lateral Movement →
+Collection → Exfiltration → Impact
+```
+
+Use `add_attack_step` to document each step. View with `/attack` CLI command.
+
+---
+
+## Credential Spray Engine
+
+Automatically tries all vault credentials against all discovered services:
+
+| Supported Protocols |
+|---------------------|
+| SSH, FTP, HTTP, HTTPS, SMB, RDP, MySQL, MSSQL, PostgreSQL, Telnet, VNC, SMTP, POP3, IMAP, LDAP |
+
+Uses hydra under the hood. Respects stealth mode rate limiting.
 
 ---
 
@@ -134,47 +183,7 @@ python pentest_copilot.py --target 10.0.0.1 --local \
 
 ---
 
-## Key Features
-
-### Subagent Parallelism
-Spawn background agents for concurrent tasks. Each subagent gets its own LLM conversation and tool access. Results auto-injected into the main agent's context.
-
-### Credential Vault
-Thread-safe credential storage with deduplication. Supports password, hash, token, key, cookie types. Auto-injected into system prompt so the agent knows what creds are available for cross-service reuse.
-
-### Multi-Shell Management
-Named persistent shell sessions for context separation — `recon` for scanning, `exploit` for exploitation, `listener` for catching reverse shells.
-
-### Reverse Shell Handler
-Built-in netcat listener management (start/stop/check) + 7 reverse shell payload generators (bash, python, nc, mkfifo, php, perl, powershell).
-
-### Exploit Search
-SearchSploit (ExploitDB) wrapper for CVE lookup after service version discovery. Also supports nmap NSE vuln scripts and nuclei CVE templates.
-
-### Tool Auto-Detection
-Scans the attack box for installed vs missing tools with caching. Knows what's available before the agent tries to use it.
-
-### Phalanx Cyber Integration
-9 specialized scanners from the Phalanx Cyber collection — Java/Python/MERN/PHP SAST, OWASP LLM Top 10, API Security, AWS Cloud, and Nuclei CVE. Auto-clones repos from GitHub if not present.
-
-### Progress Tracker
-Visual phase tracking across 5 methodology phases with command/finding counts per phase.
-
-### Compliance Mapping
-14-category mapping table covering OWASP Top 10 2021, PTES, NIST 800-53, and CWE identifiers.
-
-### Evidence Auto-Capture
-Every `run_command` output auto-saved as timestamped evidence files on the attack box.
-
-### Stealth Mode
-Rate limiting with configurable delay + random jitter. Auto-applies stealth flags to 9 tools (nmap `-sS -T2 -f`, sqlmap `--delay --random-agent`, ffuf `-rate 10`, etc.).
-
-### Safety Controls
-Regex-based dangerous command detection. User approval prompts for destructive operations. Auto-approve mode for CI/CD. Output truncation (15K chars).
-
----
-
-## 20 CLI Commands
+## 21 CLI Commands
 
 | Command | Description |
 |---------|-------------|
@@ -193,6 +202,7 @@ Regex-based dangerous command detection. User approval prompts for destructive o
 | `/progress` | Show pentest phase progress |
 | `/evidence` | Show evidence capture summary |
 | `/stealth` | Toggle stealth mode on/off |
+| `/attack` | Show attack graph / kill chain |
 | `/history` | Show command execution history |
 | `/save [file]` | Save session to JSON |
 | `/report [base]` | Generate JSON + HTML pentest report |
@@ -218,7 +228,7 @@ usage: pentest_copilot [-h] --target TARGET [--scope SCOPE] [--objective OBJ]
 ## Architecture
 
 ```
-pentest_copilot.py  (3,681 lines)
+pentest_copilot.py  (4,365 lines)
 │
 ├── LLM Providers
 │     ├── ClaudeProvider           — Anthropic Claude with tool calling
@@ -228,7 +238,7 @@ pentest_copilot.py  (3,681 lines)
 │     ├── SSHExecutor              — paramiko SSH to remote attack box
 │     └── LocalExecutor            — subprocess on local machine
 │
-├── Agent Tools (23)
+├── Agent Tools (27)
 │     ├── Core (7)                 — run_command, run_script, install_tool,
 │     │                              read/write_file, report_finding, ask_user
 │     ├── Parallelism (3)          — spawn_subagent, open_shell, run_in_shell
@@ -236,31 +246,37 @@ pentest_copilot.py  (3,681 lines)
 │     ├── Methodology (1)          — use_playbook
 │     ├── Detection (3)            — detect_tools, search_exploits, run_phalanx
 │     ├── Reverse Shell (4)        — start/stop/check_listener, generate_payload
-│     └── Tracking & Stealth (3)   — set_phase, get_compliance_map, toggle_stealth
+│     ├── Tracking & Stealth (3)   — set_phase, get_compliance_map, toggle_stealth
+│     └── Intelligence (4)         — run_recon_pipeline, smart_exploit_search,
+│                                    credential_spray, add_attack_step
 │
-├── Supporting Systems
+├── Supporting Systems (13 classes)
 │     ├── CredentialVault          — thread-safe cred storage + reuse hints
 │     ├── ShellManager             — named persistent shell sessions
 │     ├── SubagentManager          — background parallel agent spawning
 │     ├── ToolDetector             — installed tool scanning + caching
 │     ├── ExploitSearcher          — searchsploit / nuclei CVE lookup
-│     ├── ReverseShellHandler      — netcat listener + payload generation
+│     ├── ReverseShellHandler      — netcat listener + 7 payload generators
 │     ├── ProgressTracker          — 5-phase methodology tracking
 │     ├── EvidenceCollector        — auto-capture command outputs
-│     └── StealthController        — rate limiting + IDS evasion flags
+│     ├── StealthController        — rate limiting + IDS evasion flags
+│     ├── ReconPipeline            — 4 autonomous multi-tool pipelines
+│     ├── SmartExploitSelector     — nmap parser + ExploitDB ranker
+│     ├── CredentialSprayEngine    — hydra-based 14-protocol cred spray
+│     └── AttackGraph              — 11-stage MITRE ATT&CK kill chain
 │
 ├── PentestAgent (core loop)
-│     ├── build_system_prompt()    — full context injection
+│     ├── build_system_prompt()    — full context injection (13 systems)
 │     ├── run_turn()               — agentic loop (up to 25 iterations)
 │     └── Session save/load
 │
 ├── Report Generation
-│     ├── JSON report
-│     └── HTML report (Catppuccin Mocha)
+│     ├── JSON report (findings + creds + attack graph + history)
+│     └── HTML report (Catppuccin Mocha dark theme)
 │
 └── CLI Interface
       ├── Interactive chat loop
-      ├── 20 slash commands
+      ├── 21 slash commands
       └── Colored terminal output
 ```
 
@@ -273,7 +289,65 @@ pentest_copilot.py  (3,681 lines)
 | v1.0.0 | 1,656 | 7 | 10 | Core agent, SSH/local, Claude/OpenAI, safety controls |
 | v2.0.0 | 2,468 | 13 | 14 | Subagents, credential vault, multi-shell, 5 playbooks |
 | v2.1.0 | 3,095 | 20 | 17 | Tool detection, exploit search, reverse shells, Phalanx integration |
-| **v2.2.0** | **3,681** | **23** | **20** | **Progress tracker, compliance mapping, evidence capture, stealth mode** |
+| v2.2.0 | 3,681 | 23 | 20 | Progress tracker, compliance mapping, evidence capture, stealth mode |
+| **v2.3.0** | **4,365** | **27** | **21** | **Autonomous recon pipeline, smart exploit selection, credential spray, attack graph** |
+
+---
+
+## Example Session
+
+```
+You: Use the webapp playbook and run a full recon pipeline on http://10.0.0.1
+
+[PLAYBOOK] Loaded: Web Application Pentest
+
+[Agent] Starting with automated reconnaissance.
+
+  [RECON PIPELINE] Running 'full' on http://10.0.0.1
+  ──────────────────────────────────────────────────
+  [RECON] nmap: nmap -sV -sC -O -p- 10.0.0.1 ...
+    22/tcp   open  ssh     OpenSSH 8.2p1
+    80/tcp   open  http    Apache httpd 2.4.41
+    3306/tcp open  mysql   MySQL 5.7.33
+    [OK in 45.2s]
+
+  [RECON] whatweb: whatweb 10.0.0.1 ...
+    Apache 2.4.41, PHP 7.4.3, WordPress 5.7
+    [OK in 2.1s]
+
+  [RECON] ffuf: ffuf -u 10.0.0.1/FUZZ ...
+    /admin, /wp-login.php, /xmlrpc.php, /backup/
+    [OK in 18.4s]
+
+  [RECON] nuclei: nuclei -u 10.0.0.1 ...
+    [critical] CVE-2021-44228 Log4Shell
+    [high] CVE-2020-11023 jQuery XSS
+    [OK in 32.1s]
+  ──────────────────────────────────────────────────
+  [RECON COMPLETE]
+
+[Agent] Recon complete. Let me search for exploits on the discovered services.
+
+  [TOOL] smart_exploit_search: parsing services...
+  Found 3 services. Searching ExploitDB...
+   1. [METASPLOIT] Apache 2.4.49 Path Traversal (80/http)
+   2. [REMOTE] MySQL 5.7 Auth Bypass (3306/mysql)
+   3. [WEBAPP] WordPress 5.7 RCE (80/http)
+
+  [TOOL] credential_spray: 10.0.0.1 — 3 services
+  ──────────────────────────────────────────────────
+  admin@ssh:22 ... failed
+  admin@mysql:3306 ... SUCCESS
+  ──────────────────────────────────────────────────
+
+  [CRED] Stored: admin:P@s*** [password] @ mysql://10.0.0.1:3306
+
+  [ATTACK GRAPH] [Initial Access] SQL Injection in /login
+  [ATTACK GRAPH] [Credential Access] MySQL creds via brute-force
+
+  [FINDING] [CRITICAL] SQL Injection in login form
+  [FINDING] [HIGH] MySQL default credentials
+```
 
 ---
 
@@ -284,46 +358,6 @@ pentest_copilot.py  (3,681 lines)
 | `ANTHROPIC_API_KEY` | API key for Claude |
 | `OPENAI_API_KEY` | API key for OpenAI |
 | `DEBUG` | Set to any value to show full tracebacks |
-
----
-
-## Example Session
-
-```
-You: Use the webapp playbook to pentest http://10.0.0.1
-
-[PLAYBOOK] Loaded: Web Application Pentest
-
-[Agent] Starting Phase 1 — Reconnaissance. Let me detect available tools first.
-
-  [TOOL] detect_tools: checking all tools
-  Installed (24): nmap, nikto, ffuf, sqlmap, nuclei, ...
-  Missing (8): dalfox, feroxbuster, ...
-
-  [TOOL] set_phase: recon
-  [+] Recon  -->  [ ] Vuln Analysis  -->  [ ] Exploitation  -->  ...
-
-  [TOOL] run_command: nmap -sV -sC -p- 10.0.0.1
-  PORT     STATE SERVICE VERSION
-  22/tcp   open  ssh     OpenSSH 8.2p1
-  80/tcp   open  http    Apache httpd 2.4.41
-  3306/tcp open  mysql   MySQL 5.7.33
-
-  [TOOL] search_exploits: Apache 2.4.41
-  ... 3 exploits found ...
-
-  [TOOL] spawn_subagent: Run ffuf directory brute-force on http://10.0.0.1
-  [SUBAGENT] Spawned a1b2c3d4: directory brute-force (running in background)
-
-  [TOOL] run_command: sqlmap -u "http://10.0.0.1/login" --batch --dbs
-  ...
-
-  [FINDING] [HIGH] SQL Injection in /login
-  Category: SQLi | ID: e5f6g7h8
-
-  [TOOL] store_credential: admin:P@ssw0rd123 [password] @ http://10.0.0.1
-  [CRED] Stored: admin:P@s*** [password] @ http://10.0.0.1
-```
 
 ---
 
