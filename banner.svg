@@ -1,80 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0a0a14"/>
-      <stop offset="40%" style="stop-color:#0c1a2e"/>
-      <stop offset="100%" style="stop-color:#0a1020"/>
+      <stop offset="0%" stop-color="#0a0a14"/>
+      <stop offset="40%" stop-color="#0c1a2e"/>
+      <stop offset="100%" stop-color="#0a1020"/>
     </linearGradient>
     <linearGradient id="topBar" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#00D4FF"/>
-      <stop offset="50%" style="stop-color:#7B61FF"/>
-      <stop offset="100%" style="stop-color:#A855F7"/>
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="50%" stop-color="#7B61FF"/>
+      <stop offset="100%" stop-color="#A855F7"/>
     </linearGradient>
-    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#00D4FF"/>
-      <stop offset="100%" style="stop-color:#7B61FF"/>
+    <linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="100%" stop-color="#7B61FF"/>
     </linearGradient>
-    <linearGradient id="termGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#111827"/>
-      <stop offset="100%" style="stop-color:#0d1117"/>
+    <linearGradient id="tg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#0d1117"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
   </defs>
 
-  <!-- Background -->
   <rect width="1200" height="340" fill="url(#bg)" rx="14"/>
 
-  <!-- Dot grid pattern -->
-  <g fill="#ffffff" opacity="0.02">
-    <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="0.8"/>
-    </pattern>
-    <rect width="1200" height="340" fill="url(#dots)"/>
-  </g>
-
-  <!-- Ghost terminal lines in background -->
-  <g opacity="0.03" fill="#94a3b8" font-family="'Courier New',monospace" font-size="9">
+  <!-- Ghost terminal lines -->
+  <g opacity="0.035" fill="#94a3b8" font-family="Courier New,monospace" font-size="9">
     <text x="24" y="28">$ nmap -sV -sC -O -A -p- 10.0.0.1</text>
     <text x="24" y="44">$ sqlmap -u "http://target/login" --batch --dbs</text>
     <text x="24" y="60">$ nikto -h http://10.0.0.1 -Tuning 123bde</text>
     <text x="500" y="28">$ nuclei -u https://target.com -t cves/</text>
     <text x="500" y="44">$ hydra -l admin -P rockyou.txt ssh://10.0.0.1</text>
     <text x="880" y="28">$ ffuf -w wordlist.txt -u http://target/FUZZ</text>
-    <text x="24" y="326">[CRITICAL] RCE via deserialization — CVE-2024-XXXX</text>
+    <text x="24" y="326">[CRITICAL] RCE via deserialization CVE-2024-XXXX</text>
     <text x="500" y="326">[HIGH] SQL Injection in /api/login endpoint</text>
     <text x="880" y="326">[FINDING] Privilege escalation via SUID binary</text>
   </g>
 
-  <!-- Top accent bar -->
+  <!-- Top bar -->
   <rect x="0" y="0" width="1200" height="3.5" fill="url(#topBar)" rx="2"/>
 
-  <!-- Shield + Brain icon (AI + Security) -->
+  <!-- Shield icon with neural network -->
   <g transform="translate(82, 148)">
-    <!-- Outer glow -->
-    <circle cx="0" cy="0" r="60" fill="url(#accentGrad)" opacity="0.08"/>
+    <circle cx="0" cy="0" r="60" fill="url(#ag)" opacity="0.08"/>
+    <path d="M0,-54 L46,-37 L46,14 C46,43 23,60 0,68 C-23,60 -46,43 -46,14 L-46,-37 Z" fill="url(#ag)" opacity="0.85"/>
+    <path d="M0,-44 L38,-30 L38,10 C38,35 19,50 0,56 C-19,50 -38,35 -38,10 L-38,-30 Z" fill="#0a0a14"/>
 
-    <!-- Shield shape -->
-    <path d="M0,-54 L46,-37 L46,14 C46,43 23,60 0,68 C-23,60 -46,43 -46,14 L-46,-37 Z"
-          fill="url(#accentGrad)" opacity="0.85"/>
-    <path d="M0,-44 L38,-30 L38,10 C38,35 19,50 0,56 C-19,50 -38,35 -38,10 L-38,-30 Z"
-          fill="#0a0a14"/>
+    <!-- Neural nodes -->
+    <circle cx="-14" cy="-18" r="3.5" fill="#00D4FF" opacity="0.9"/>
+    <circle cx="14" cy="-18" r="3.5" fill="#7B61FF" opacity="0.9"/>
+    <circle cx="0" cy="-6" r="4" fill="#00D4FF" opacity="0.8"/>
+    <circle cx="-18" cy="6" r="3" fill="#A855F7" opacity="0.7"/>
+    <circle cx="18" cy="6" r="3" fill="#00D4FF" opacity="0.7"/>
+    <circle cx="-8" cy="18" r="3.5" fill="#7B61FF" opacity="0.8"/>
+    <circle cx="8" cy="18" r="3.5" fill="#A855F7" opacity="0.8"/>
+    <circle cx="0" cy="30" r="3" fill="#00D4FF" opacity="0.6"/>
 
-    <!-- AI brain network inside shield -->
-    <g stroke="url(#accentGrad)" stroke-width="1.5" fill="none" opacity="0.9">
-      <!-- Neural network nodes -->
-      <circle cx="-14" cy="-18" r="3.5" fill="#00D4FF" opacity="0.9"/>
-      <circle cx="14" cy="-18" r="3.5" fill="#7B61FF" opacity="0.9"/>
-      <circle cx="0" cy="-6" r="4" fill="#00D4FF" opacity="0.8"/>
-      <circle cx="-18" cy="6" r="3" fill="#A855F7" opacity="0.7"/>
-      <circle cx="18" cy="6" r="3" fill="#00D4FF" opacity="0.7"/>
-      <circle cx="-8" cy="18" r="3.5" fill="#7B61FF" opacity="0.8"/>
-      <circle cx="8" cy="18" r="3.5" fill="#A855F7" opacity="0.8"/>
-      <circle cx="0" cy="30" r="3" fill="#00D4FF" opacity="0.6"/>
-
-      <!-- Connections -->
+    <!-- Connections -->
+    <g stroke="#00D4FF" fill="none">
       <line x1="-14" y1="-18" x2="0" y2="-6" stroke-width="1" opacity="0.5"/>
       <line x1="14" y1="-18" x2="0" y2="-6" stroke-width="1" opacity="0.5"/>
       <line x1="0" y1="-6" x2="-18" y2="6" stroke-width="1" opacity="0.4"/>
@@ -87,99 +68,84 @@
       <line x1="-8" y1="18" x2="8" y2="18" stroke-width="0.8" opacity="0.3"/>
     </g>
 
-    <!-- Pulse ring animation hint -->
-    <circle cx="0" cy="0" r="50" fill="none" stroke="url(#accentGrad)" stroke-width="0.5" opacity="0.15"/>
+    <circle cx="0" cy="0" r="50" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.12"/>
   </g>
 
   <!-- Title -->
-  <text x="162" y="115" font-family="'Inter','Segoe UI',Arial,sans-serif" font-size="44" font-weight="800" fill="#f8fafc" letter-spacing="-1">
-    Autonomous Penetration
-  </text>
-  <text x="162" y="167" font-family="'Inter','Segoe UI',Arial,sans-serif" font-size="44" font-weight="800" fill="#f8fafc" letter-spacing="-1">
-    Testing Copilot
-  </text>
+  <text x="162" y="115" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="44" font-weight="800" fill="#f8fafc" letter-spacing="-1">Autonomous Penetration</text>
+  <text x="162" y="167" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="44" font-weight="800" fill="#f8fafc" letter-spacing="-1">Testing Copilot</text>
 
   <!-- Subtitle -->
-  <text x="164" y="199" font-family="'Inter','Segoe UI',sans-serif" font-size="15" fill="#64748b" letter-spacing="0.3">
-    AI-powered pentest agent with LLM agentic loop &amp; SSH execution
-  </text>
+  <text x="164" y="199" font-family="Inter,Segoe UI,sans-serif" font-size="15" fill="#64748b" letter-spacing="0.3">AI-powered pentest agent with LLM agentic loop and SSH execution</text>
 
   <!-- Tag pills -->
   <g transform="translate(164, 220)">
     <rect x="0" y="0" width="62" height="24" rx="12" fill="#00D4FF" opacity="0.12"/>
     <rect x="0" y="0" width="62" height="24" rx="12" fill="none" stroke="#00D4FF" stroke-width="0.8" opacity="0.35"/>
-    <text x="31" y="16" font-family="'Inter',sans-serif" font-size="10.5" font-weight="600" fill="#00D4FF" text-anchor="middle">Claude</text>
+    <text x="31" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#00D4FF" text-anchor="middle">Claude</text>
 
     <rect x="70" y="0" width="62" height="24" rx="12" fill="#7B61FF" opacity="0.12"/>
     <rect x="70" y="0" width="62" height="24" rx="12" fill="none" stroke="#7B61FF" stroke-width="0.8" opacity="0.35"/>
-    <text x="101" y="16" font-family="'Inter',sans-serif" font-size="10.5" font-weight="600" fill="#7B61FF" text-anchor="middle">OpenAI</text>
+    <text x="101" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#7B61FF" text-anchor="middle">OpenAI</text>
 
     <rect x="140" y="0" width="46" height="24" rx="12" fill="#A855F7" opacity="0.12"/>
     <rect x="140" y="0" width="46" height="24" rx="12" fill="none" stroke="#A855F7" stroke-width="0.8" opacity="0.35"/>
-    <text x="163" y="16" font-family="'Inter',sans-serif" font-size="10.5" font-weight="600" fill="#A855F7" text-anchor="middle">SSH</text>
+    <text x="163" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#A855F7" text-anchor="middle">SSH</text>
 
     <rect x="194" y="0" width="48" height="24" rx="12" fill="#22c55e" opacity="0.12"/>
     <rect x="194" y="0" width="48" height="24" rx="12" fill="none" stroke="#22c55e" stroke-width="0.8" opacity="0.35"/>
-    <text x="218" y="16" font-family="'Inter',sans-serif" font-size="10.5" font-weight="600" fill="#22c55e" text-anchor="middle">Local</text>
+    <text x="218" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#22c55e" text-anchor="middle">Local</text>
 
     <rect x="250" y="0" width="76" height="24" rx="12" fill="#f59e0b" opacity="0.12"/>
     <rect x="250" y="0" width="76" height="24" rx="12" fill="none" stroke="#f59e0b" stroke-width="0.8" opacity="0.35"/>
-    <text x="288" y="16" font-family="'Inter',sans-serif" font-size="10.5" font-weight="600" fill="#f59e0b" text-anchor="middle">Kali Linux</text>
+    <text x="288" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#f59e0b" text-anchor="middle">Kali Linux</text>
 
     <rect x="334" y="0" width="92" height="24" rx="12" fill="#ef4444" opacity="0.12"/>
     <rect x="334" y="0" width="92" height="24" rx="12" fill="none" stroke="#ef4444" stroke-width="0.8" opacity="0.35"/>
-    <text x="380" y="16" font-family="'Inter',sans-serif" font-size="10.5" font-weight="600" fill="#ef4444" text-anchor="middle">MITRE ATT&amp;CK</text>
+    <text x="380" y="16" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#ef4444" text-anchor="middle">MITRE ATT&amp;CK</text>
   </g>
 
-  <!-- Stats cards (right side) -->
+  <!-- Stats cards -->
   <g transform="translate(770, 78)">
-    <!-- Card 1: Agent Tools -->
     <rect x="0" y="0" width="125" height="76" rx="10" fill="#1e293b" opacity="0.5"/>
     <rect x="0" y="0" width="125" height="76" rx="10" fill="none" stroke="#334155" stroke-width="0.7"/>
-    <text x="62" y="36" font-family="'Inter',sans-serif" font-size="30" font-weight="800" fill="#00D4FF" text-anchor="middle">7</text>
-    <text x="62" y="56" font-family="'Inter',sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">AGENT TOOLS</text>
+    <text x="62" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#00D4FF" text-anchor="middle">7</text>
+    <text x="62" y="56" font-family="Inter,sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">AGENT TOOLS</text>
 
-    <!-- Card 2: Pentest Tools -->
     <rect x="135" y="0" width="125" height="76" rx="10" fill="#1e293b" opacity="0.5"/>
     <rect x="135" y="0" width="125" height="76" rx="10" fill="none" stroke="#334155" stroke-width="0.7"/>
-    <text x="197" y="36" font-family="'Inter',sans-serif" font-size="30" font-weight="800" fill="#7B61FF" text-anchor="middle">60+</text>
-    <text x="197" y="56" font-family="'Inter',sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">PENTEST TOOLS</text>
+    <text x="197" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#7B61FF" text-anchor="middle">60+</text>
+    <text x="197" y="56" font-family="Inter,sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">PENTEST TOOLS</text>
 
-    <!-- Card 3: Iterations -->
     <rect x="270" y="0" width="125" height="76" rx="10" fill="#1e293b" opacity="0.5"/>
     <rect x="270" y="0" width="125" height="76" rx="10" fill="none" stroke="#334155" stroke-width="0.7"/>
-    <text x="332" y="36" font-family="'Inter',sans-serif" font-size="30" font-weight="800" fill="#22c55e" text-anchor="middle">25</text>
-    <text x="332" y="56" font-family="'Inter',sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">MAX ITERATIONS</text>
+    <text x="332" y="36" font-family="Inter,sans-serif" font-size="30" font-weight="800" fill="#22c55e" text-anchor="middle">25</text>
+    <text x="332" y="56" font-family="Inter,sans-serif" font-size="9.5" fill="#64748b" text-anchor="middle" letter-spacing="1.2">MAX ITERATIONS</text>
   </g>
 
-  <!-- Mini terminal (right side) -->
+  <!-- Mini terminal -->
   <g transform="translate(770, 172)">
-    <rect x="0" y="0" width="395" height="88" rx="8" fill="url(#termGrad)" stroke="#334155" stroke-width="0.7"/>
-
-    <!-- Terminal bar -->
+    <rect x="0" y="0" width="395" height="88" rx="8" fill="url(#tg)" stroke="#334155" stroke-width="0.7"/>
     <rect x="0" y="0" width="395" height="22" rx="8" fill="#1e293b"/>
     <rect x="0" y="11" width="395" height="11" fill="#1e293b"/>
     <circle cx="14" cy="11" r="4" fill="#ef4444" opacity="0.8"/>
     <circle cx="28" cy="11" r="4" fill="#f59e0b" opacity="0.8"/>
     <circle cx="42" cy="11" r="4" fill="#22c55e" opacity="0.8"/>
-    <text x="68" y="15" font-family="'Courier New',monospace" font-size="8.5" fill="#64748b">pentest-copilot</text>
+    <text x="68" y="15" font-family="Courier New,monospace" font-size="8.5" fill="#64748b">pentest-copilot</text>
 
-    <!-- Terminal content -->
-    <text x="14" y="40" font-family="'Courier New',monospace" font-size="9.5" fill="#22c55e">$</text>
-    <text x="26" y="40" font-family="'Courier New',monospace" font-size="9.5" fill="#cdd6f4">python pentest_copilot.py --target 10.0.0.1</text>
-    <text x="14" y="55" font-family="'Courier New',monospace" font-size="9" fill="#64748b">[*] Connected to root@kali — scanning...</text>
-    <text x="14" y="70" font-family="'Courier New',monospace" font-size="9" fill="#ef4444" font-weight="bold">[CRITICAL]</text>
-    <text x="82" y="70" font-family="'Courier New',monospace" font-size="9" fill="#cdd6f4">RCE via Log4Shell (CVE-2021-44228)</text>
-    <text x="14" y="82" font-family="'Courier New',monospace" font-size="9" fill="#f59e0b" font-weight="bold">[HIGH]</text>
-    <text x="58" y="82" font-family="'Courier New',monospace" font-size="9" fill="#cdd6f4">SQL Injection in /api/v1/users</text>
+    <text x="14" y="40" font-family="Courier New,monospace" font-size="9.5" fill="#22c55e">$</text>
+    <text x="26" y="40" font-family="Courier New,monospace" font-size="9.5" fill="#cdd6f4">python pentest_copilot.py --target 10.0.0.1</text>
+    <text x="14" y="55" font-family="Courier New,monospace" font-size="9" fill="#64748b">[*] Connected to root@kali -- scanning...</text>
+    <text x="14" y="70" font-family="Courier New,monospace" font-size="9" fill="#ef4444" font-weight="bold">[CRITICAL]</text>
+    <text x="82" y="70" font-family="Courier New,monospace" font-size="9" fill="#cdd6f4">RCE via Log4Shell (CVE-2021-44228)</text>
+    <text x="14" y="82" font-family="Courier New,monospace" font-size="9" fill="#f59e0b" font-weight="bold">[HIGH]</text>
+    <text x="58" y="82" font-family="Courier New,monospace" font-size="9" fill="#cdd6f4">SQL Injection in /api/v1/users</text>
   </g>
 
-  <!-- Bottom info line -->
+  <!-- Bottom line -->
   <line x1="40" y1="290" x2="1160" y2="290" stroke="#1e293b" stroke-width="0.7"/>
-  <text x="164" y="312" font-family="'Inter','Segoe UI',sans-serif" font-size="11" fill="#475569" letter-spacing="0.2">
-    AI Pentest Agent &bull; Claude + OpenAI &bull; SSH + Local &bull; 60+ Tools &bull; github.com/Krishcalin/Autonomous-Pen-Testing
-  </text>
+  <text x="164" y="312" font-family="Inter,Segoe UI,sans-serif" font-size="11" fill="#475569" letter-spacing="0.2">AI Pentest Agent · Claude + OpenAI · SSH + Local · 60+ Tools · github.com/Krishcalin/Autonomous-Pen-Testing</text>
 
-  <!-- Bottom accent bar -->
+  <!-- Bottom bar -->
   <rect x="0" y="336.5" width="1200" height="3.5" fill="url(#topBar)" rx="2"/>
 </svg>
