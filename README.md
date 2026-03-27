@@ -1,5 +1,9 @@
 # Autonomous Penetration Testing Copilot
 
+<p align="center">
+  <img src="banner.svg" alt="Autonomous Pentest Copilot" width="100%">
+</p>
+
 An open-source, AI-powered penetration testing agent that connects to an attack box (Kali/Parrot) via SSH, autonomously runs security tools, analyses output, plans next steps, documents findings, and generates reports — all driven by an LLM agentic loop.
 
 ## Overview
