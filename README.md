@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <strong>AI-powered pentest agent with autonomous recon, credential spraying, exploit selection, and kill chain tracking</strong><br>
-  27 agent tools &bull; 60+ pentest tools &bull; 5 playbooks &bull; 21 CLI commands &bull; 4,365 lines of Python
+  <strong>AI-powered pentest agent with autonomous recon, vulnerability validation, exploit analysis, finding correlation, and kill chain tracking</strong><br>
+  30 agent tools &bull; 60+ pentest tools &bull; 5 playbooks &bull; 21 CLI commands &bull; 5,075 lines of Python
 </p>
 
 ---
@@ -18,9 +18,9 @@ A single-file Python agent that connects to a Kali/Parrot attack box via SSH (or
 | | |
 |---|---|
 | **File** | `pentest_copilot.py` |
-| **Version** | 2.3.0 |
-| **Lines** | ~4,365 |
-| **Agent Tools** | 27 |
+| **Version** | 2.4.0 |
+| **Lines** | ~5,075 |
+| **Agent Tools** | 30 |
 | **CLI Commands** | 21 |
 | **Pentest Tools** | 60+ in registry |
 | **Playbooks** | 5 (webapp, network, api, ad, cloud) |
@@ -62,7 +62,7 @@ python pentest_copilot.py --target 10.0.0.1 --local \
 
 ---
 
-## 27 Agent Tools
+## 30 Agent Tools
 
 ### Core (7)
 
@@ -116,6 +116,14 @@ python pentest_copilot.py --target 10.0.0.1 --local \
 | `credential_spray` | Spray vault credentials against all discovered services via hydra (14 protocols) |
 | `add_attack_step` | Record a kill chain step mapped to MITRE ATT&CK stages |
 
+### Tier 5 — Validation, Analysis & Correlation (3)
+
+| Tool | Description |
+|------|-------------|
+| `validate_finding` | Submit findings to 6-stage validation pipeline (inventory → analysis → sanity_check → ruling → feasibility → validated) |
+| `analyze_exploit` | Score findings by Impact × Exploitability / Detection Time with P1-P4 priority ratings |
+| `correlate_findings` | Cross-tool deduplication — groups findings by host+port+CVE, boosts confidence when multiple tools agree |
+
 ---
 
 ## 4 Autonomous Recon Pipelines
@@ -166,6 +174,51 @@ Automatically tries all vault credentials against all discovered services:
 | SSH, FTP, HTTP, HTTPS, SMB, RDP, MySQL, MSSQL, PostgreSQL, Telnet, VNC, SMTP, POP3, IMAP, LDAP |
 
 Uses hydra under the hood. Respects stealth mode rate limiting.
+
+---
+
+## Vulnerability Validation Pipeline
+
+Inspired by RAPTOR's multi-stage approach. Every raw finding passes through 6 stages before becoming a confirmed vulnerability:
+
+```
+inventory → analysis → sanity_check → ruling → feasibility → validated
+                                                                  ↓
+                                                          report_finding
+```
+
+At each stage, the agent evaluates confidence and can reject false positives. Only **validated** findings get reported — eliminating noise from tools that cry wolf.
+
+---
+
+## Exploit Analysis Engine
+
+Scores confirmed findings by **Impact × Exploitability / Detection Time** and assigns priority ratings:
+
+| Priority | Risk Score | Action |
+|----------|-----------|--------|
+| **P1-IMMEDIATE** | ≥ 15 | Exploit now — high-impact, low-effort |
+| **P2-HIGH** | ≥ 8 | Public exploit available or high value target |
+| **P3-MEDIUM** | ≥ 3 | Document, attempt if time permits |
+| **P4-LOW** | < 3 | Log as informational |
+
+**8 exploitability modifiers**: public_exploit, auth_required, network_accessible, local_only, user_interaction, no_interaction, default_creds, version_match.
+
+---
+
+## Finding Correlation Engine
+
+When multiple tools (nmap, nikto, nuclei, etc.) report the same issue, correlation:
+- **Deduplicates** findings by host + port + CVE or normalized title
+- **Boosts confidence** — 1 tool = 50%, 2 tools = 80%, 3+ tools = 95%
+- **Selects best severity** — highest severity across tools wins
+- **CVE matching** — strongest correlation signal
+
+```
+nmap  ──┐
+nikto ──┤──→ Correlator ──→ 15 raw → 8 unique (47% dedup)
+nuclei ─┘                   3 multi-tool confirmed (95% confidence)
+```
 
 ---
 
@@ -228,7 +281,7 @@ usage: pentest_copilot [-h] --target TARGET [--scope SCOPE] [--objective OBJ]
 ## Architecture
 
 ```
-pentest_copilot.py  (4,365 lines)
+pentest_copilot.py  (5,075 lines)
 │
 ├── LLM Providers
 │     ├── ClaudeProvider           — Anthropic Claude with tool calling
@@ -238,7 +291,7 @@ pentest_copilot.py  (4,365 lines)
 │     ├── SSHExecutor              — paramiko SSH to remote attack box
 │     └── LocalExecutor            — subprocess on local machine
 │
-├── Agent Tools (27)
+├── Agent Tools (30)
 │     ├── Core (7)                 — run_command, run_script, install_tool,
 │     │                              read/write_file, report_finding, ask_user
 │     ├── Parallelism (3)          — spawn_subagent, open_shell, run_in_shell
@@ -247,10 +300,12 @@ pentest_copilot.py  (4,365 lines)
 │     ├── Detection (3)            — detect_tools, search_exploits, run_phalanx
 │     ├── Reverse Shell (4)        — start/stop/check_listener, generate_payload
 │     ├── Tracking & Stealth (3)   — set_phase, get_compliance_map, toggle_stealth
-│     └── Intelligence (4)         — run_recon_pipeline, smart_exploit_search,
-│                                    credential_spray, add_attack_step
+│     ├── Intelligence (4)         — run_recon_pipeline, smart_exploit_search,
+│     │                              credential_spray, add_attack_step
+│     └── Validation & Analysis (3)— validate_finding, analyze_exploit,
+│                                    correlate_findings
 │
-├── Supporting Systems (13 classes)
+├── Supporting Systems (16 classes)
 │     ├── CredentialVault          — thread-safe cred storage + reuse hints
 │     ├── ShellManager             — named persistent shell sessions
 │     ├── SubagentManager          — background parallel agent spawning
@@ -263,10 +318,13 @@ pentest_copilot.py  (4,365 lines)
 │     ├── ReconPipeline            — 4 autonomous multi-tool pipelines
 │     ├── SmartExploitSelector     — nmap parser + ExploitDB ranker
 │     ├── CredentialSprayEngine    — hydra-based 14-protocol cred spray
-│     └── AttackGraph              — 11-stage MITRE ATT&CK kill chain
+│     ├── AttackGraph              — 11-stage MITRE ATT&CK kill chain
+│     ├── VulnValidator            — 6-stage finding validation pipeline
+│     ├── ExploitAnalyzer          — risk scoring + P1-P4 priority engine
+│     └── FindingCorrelator        — cross-tool dedup + confidence boosting
 │
 ├── PentestAgent (core loop)
-│     ├── build_system_prompt()    — full context injection (13 systems)
+│     ├── build_system_prompt()    — full context injection (16 systems)
 │     ├── run_turn()               — agentic loop (up to 25 iterations)
 │     └── Session save/load
 │
@@ -290,7 +348,8 @@ pentest_copilot.py  (4,365 lines)
 | v2.0.0 | 2,468 | 13 | 14 | Subagents, credential vault, multi-shell, 5 playbooks |
 | v2.1.0 | 3,095 | 20 | 17 | Tool detection, exploit search, reverse shells, Phalanx integration |
 | v2.2.0 | 3,681 | 23 | 20 | Progress tracker, compliance mapping, evidence capture, stealth mode |
-| **v2.3.0** | **4,365** | **27** | **21** | **Autonomous recon pipeline, smart exploit selection, credential spray, attack graph** |
+| v2.3.0 | 4,365 | 27 | 21 | Autonomous recon pipeline, smart exploit selection, credential spray, attack graph |
+| **v2.4.0** | **5,075** | **30** | **21** | **Vulnerability validation pipeline, exploit analysis engine, finding correlation & dedup** |
 
 ---
 

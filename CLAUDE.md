@@ -5,7 +5,9 @@
 An AI-powered penetration testing agent that connects to a Kali/Parrot attack
 box via SSH, runs security tools autonomously, analyses output, plans next steps,
 stores credentials for reuse, spawns parallel subagents, sprays credentials across
-services, builds MITRE ATT&CK attack graphs, and documents findings.
+services, builds MITRE ATT&CK attack graphs, validates findings through a 6-stage
+pipeline, scores exploits by risk priority, correlates findings across tools, and
+documents findings.
 
 **Repository**: https://github.com/Krishcalin/Autonomous-Pen-Testing
 **License**: MIT
@@ -16,7 +18,7 @@ services, builds MITRE ATT&CK attack graphs, and documents findings.
 
 | File | Version | Lines | Purpose |
 |------|---------|------:|---------|
-| `pentest_copilot.py` | 2.3.0 | 4,365 | Complete pentest agent |
+| `pentest_copilot.py` | 2.4.0 | 5,075 | Complete pentest agent |
 | `banner.svg` | — | — | GitHub README banner |
 | `README.md` | — | — | Documentation |
 | `CLAUDE.md` | — | — | This file |
@@ -27,14 +29,14 @@ services, builds MITRE ATT&CK attack graphs, and documents findings.
 pentest_copilot.py
 ├── LLM Providers: ClaudeProvider, OpenAIProvider
 ├── Executors: SSHExecutor (paramiko), LocalExecutor (subprocess)
-├── 27 Agent Tools (LLM function-calling)
-├── 13 Supporting Systems
+├── 30 Agent Tools (LLM function-calling)
+├── 16 Supporting Systems
 ├── PentestAgent (core agentic loop, up to 25 iterations/turn)
 ├── Report Generation (JSON + HTML)
 └── CLI (21 slash commands)
 ```
 
-## 27 Agent Tools — Complete Reference
+## 30 Agent Tools — Complete Reference
 
 ### Core (7)
 | Tool | Handler | Purpose |
@@ -83,7 +85,14 @@ pentest_copilot.py
 | `credential_spray` | `handle_credential_spray` | Spray vault creds via hydra (14 protocols) |
 | `add_attack_step` | `handle_add_attack_step` | Record kill chain step (11 ATT&CK stages) |
 
-## 13 Supporting Systems
+### Tier 5 — Validation, Analysis & Correlation (3)
+| Tool | Handler | Purpose |
+|------|---------|---------|
+| `validate_finding` | `handle_validate_finding` | 6-stage validation pipeline (inventory→analysis→sanity→ruling→feasibility→validated) |
+| `analyze_exploit` | `handle_analyze_exploit` | Risk scoring: Impact × Exploitability / Detection Time → P1-P4 priority |
+| `correlate_findings` | `handle_correlate_findings` | Cross-tool dedup, CVE matching, confidence boosting |
+
+## 16 Supporting Systems
 
 | Class | Section | Purpose |
 |-------|---------|---------|
@@ -100,6 +109,9 @@ pentest_copilot.py
 | `SmartExploitSelector` | Smart Exploit Selection | Nmap output parser + ExploitDB ranker |
 | `CredentialSprayEngine` | Credential Spray Engine | Hydra-based 14-protocol credential spraying |
 | `AttackGraph` | Attack Graph | 11-stage MITRE ATT&CK kill chain tracker |
+| `VulnValidator` | Validation Pipeline | 6-stage finding validation (inventory→validated), false positive elimination |
+| `ExploitAnalyzer` | Exploit Analysis | Impact×Exploitability/Detection scoring, P1-P4 priority, 8 modifiers |
+| `FindingCorrelator` | Finding Correlation | Cross-tool dedup by host+port+CVE, confidence boosting (50%→80%→95%) |
 
 ## Recon Pipelines
 
@@ -176,9 +188,9 @@ user_message → inject subagent results → build_system_prompt(13 systems)
                               → feed result → loop (up to 25 iterations)
 ```
 
-The system prompt dynamically injects context from all 13 supporting systems:
+The system prompt dynamically injects context from all 16 supporting systems:
 credential vault, shells, subagents, listeners, tool status, progress, stealth,
-attack graph, findings.
+attack graph, validation pipeline, exploit analysis, finding correlation, findings.
 
 ## Safety Controls
 
@@ -252,3 +264,4 @@ JSON session includes: `session_id`, `target`, `scope`, `objective`, `findings[]
 | v2.1.0 | 3,095 | 20 | 17 | Tool detection, exploits, revshell, Phalanx |
 | v2.2.0 | 3,681 | 23 | 20 | Progress, compliance, evidence, stealth |
 | v2.3.0 | 4,365 | 27 | 21 | Recon pipeline, exploit selector, cred spray, attack graph |
+| v2.4.0 | 5,075 | 30 | 21 | Vulnerability validation pipeline, exploit analysis engine, finding correlation |
