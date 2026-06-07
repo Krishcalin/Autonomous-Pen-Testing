@@ -1,3 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.venv/
+venv/
+*.egg-info/
+
+# Secrets
+.env
+.env.*
+!.env.example
+credentials.json
+*.pem
+
 ### AL ###
 #Template for AL projects for Dynamics 365 Business Central
 #launch.json folder
